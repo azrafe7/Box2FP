@@ -261,6 +261,12 @@ public class b2World
 		}
 		
 		--m_bodyCount;
+		
+		// Bug fix
+		b.Destroy();
+		b = null;
+		// End Bug fix
+		
 		//b->~b2Body();
 		//m_blockAllocator.Free(b, sizeof(b2Body));
 		

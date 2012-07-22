@@ -304,6 +304,14 @@ public class b2Fixture
 		
 		// Free the child shape
 		m_shape = null;
+		// Bug fix
+		m_massData = null;
+		m_aabb = null;
+		m_body = null;
+		m_proxy = null;
+		m_filter = null;
+		m_userData = null;
+		// End Bug fix
 	}
 	
 	/**

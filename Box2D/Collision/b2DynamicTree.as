@@ -324,6 +324,8 @@ package Box2D.Collision
 		{
 			node.parent = m_freeList;
 			m_freeList = node;
+			// Bug fix
+			node.userData = null;
 		}
 		
 		private function InsertLeaf(leaf:b2DynamicTreeNode):void

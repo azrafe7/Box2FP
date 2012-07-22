@@ -1238,6 +1238,22 @@ public class b2Body
 	// Destructor
 	//~b2Body();
 
+	// Bug fix
+	public function Destroy():void {
+		m_userData = null;
+		m_sweep = null;	
+		m_xf = null;
+		m_linearVelocity = null;
+		m_force = null;
+		m_world = null;
+		m_prev = null;
+		m_next = null;
+		m_fixtureList = null;
+		m_controllerList = null;
+		m_jointList = null;
+		m_contactList = null;
+	} 
+
 	//
 	static private var s_xf1:b2Transform = new b2Transform();
 	//

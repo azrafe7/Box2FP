@@ -141,6 +141,18 @@ public class b2ContactFactory
 			reg.poolCount++;
 			contact.m_next = reg.pool;
 			reg.pool = contact;
+			// Bug fix
+			contact.m_fixtureA = null;
+			contact.m_fixtureB = null;   
+			contact.m_nodeA.contact = null;
+			contact.m_nodeA.prev = null;
+			contact.m_nodeA.next = null;
+			contact.m_nodeA.other = null;
+			contact.m_nodeB.contact = null;
+			contact.m_nodeB.prev = null;
+			contact.m_nodeB.next = null;
+			contact.m_nodeB.other = null;
+			// End Bug fix
 		}
 		
 		var destroyFcn:Function = reg.destroyFcn;
