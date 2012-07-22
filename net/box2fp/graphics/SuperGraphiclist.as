@@ -4,6 +4,7 @@ package net.box2fp.graphics
 	import net.flashpunk.graphics.Canvas;
 	import net.flashpunk.graphics.Graphiclist;
 	import net.flashpunk.graphics.Image;
+	import net.flashpunk.graphics.PreRotation;
 	
 	/**
 	 * A type of Graphiclist that can update certain characteristics
@@ -95,7 +96,9 @@ package net.box2fp.graphics
 			if (_angle == v) return;
 			for each (var g:Graphic in children)
 			{
-				if (g is Image)
+				if (g is PreRotation)
+					(g as PreRotation).frameAngle += v - _angle;
+				else if (g is Image)
 					(g as Image).angle += v - _angle;
 				else if (g is SuperGraphiclist)
 					(g as SuperGraphiclist).angle += v - _angle;

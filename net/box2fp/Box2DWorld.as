@@ -5,6 +5,7 @@ package net.box2fp
 	import Box2D.Dynamics.b2Body;
 	import Box2D.Dynamics.b2DebugDraw;
 	import Box2D.Dynamics.b2World;
+	import net.flashpunk.Entity;
 	
 	import flash.display.Sprite;
 	
@@ -86,12 +87,14 @@ package net.box2fp
 			}
 			if (debug)
 			{
+				if (!debug_sprite) debug_draw();
 				debug_sprite.x = -camera.x * FP.screen.scale + FP.screen.x;
 				debug_sprite.y = -camera.y * FP.screen.scale + FP.screen.y;
 				debug_sprite.scaleX = FP.screen.scale;
 				debug_sprite.scaleY = FP.screen.scale;
 				b2world.DrawDebugData();
 			}
+			if (debug_sprite) debug_sprite.visible = debug;
 			super.update();
 		}
 		
@@ -106,7 +109,7 @@ package net.box2fp
 			debug_sprite.addChild(dbgSprite);
 			dbgDraw.SetSprite(debug_sprite);
 			dbgDraw.SetDrawScale(scale);
-			dbgDraw.SetFillAlpha(0.5);
+			dbgDraw.SetFillAlpha(0.2);
 			dbgDraw.SetLineThickness(1);
 			dbgDraw.SetFlags(b2DebugDraw.e_shapeBit|
 				b2DebugDraw.e_jointBit |
@@ -133,6 +136,40 @@ package net.box2fp
 				FP.stage.removeChild(debug_sprite);
 		}
 		
+		public override function remove(e:Entity):Entity
+		{
+			//trace("bwRemove");
+			return super.remove(e);
+			
+			// TODO: watchout
+			if (b2world && e is Box2DEntity) {
+				var b2ent:Box2DEntity = (e as Box2DEntity);
+				b2ent.body.SetUserData(null);
+				b2world.DestroyBody(b2ent.body);
+			}
+		}
+		
+		override public function create(classType:Class, addToWorld:Boolean = true):Entity 
+		{
+			var res:Entity = super.create(classType, addToWorld);
+			//trace("create");
+			if (res is Box2DEntity) {
+				//trace((res as Box2DEntity).body);
+				(res as Box2DEntity).body.SetActive(true);
+				//(res as Box2DEntity).body.SetAwake(true);
+			}
+			return res;
+		}
+		
+		override public function recycle(e:Entity):Entity 
+		{
+			if (e is Box2DEntity) {
+				(e as Box2DEntity).body.SetActive(false);
+				//(e as Box2DEntity).body.SetAwake(false);
+			}
+			return super.recycle(e);
+		}
+		
 		/** Pauses the game */
 		public function pause():void { _paused = true; }
 		/** Unpauses the game */
@@ -141,7 +178,7 @@ package net.box2fp
 		public function get paused():Boolean { return _paused; }
 		
 		private var _paused:Boolean = false;
-		private var debug:Boolean = false;
+		protected var debug:Boolean = false;
 		private var debug_sprite:Sprite;
 		private var _b2world:b2World = new b2World(new b2Vec2(0.0, 0.0), true);
 	}

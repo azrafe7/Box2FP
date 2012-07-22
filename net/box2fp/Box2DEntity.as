@@ -1,5 +1,6 @@
 package net.box2fp
 {
+	import Box2D.Collision.b2Bound;
 	import Box2D.Common.Math.b2Vec2;
 	import Box2D.Dynamics.b2Body;
 	import Box2D.Dynamics.b2BodyDef;
@@ -39,7 +40,7 @@ package net.box2fp
 								density:Number = 1, restitution:Number = 1)
 		{
 			super(x, y, new SuperGraphiclist);
-			
+			//trace("constr");
 			_Box2DOptions = { type: b2Type, group: group, category: category, collmask: collmask,
 								friction: friction, density: density, restitution: restitution };
 			
@@ -52,7 +53,7 @@ package net.box2fp
 		override public function added():void
 		{
 			super.added();
-			
+			//trace("added");
 			if (box2dworld != null)
 			{
 				makeBody(box2dworld.b2world);
@@ -72,10 +73,11 @@ package net.box2fp
 		 */
 		protected function makeBody(world:b2World):void
 		{
+			//trace("makeBody");
 			if (_body == null)
 			{
 				var bodyDef:b2BodyDef = new b2BodyDef;
-				bodyDef.position.Set((x + width/2) / box2dworld.scale, (y + height/2) / box2dworld.scale);
+				bodyDef.position.Set((x + width/2 - originX) / box2dworld.scale, (y + height/2 - originY) / box2dworld.scale);
 				bodyDef.type = _Box2DOptions.type;
 				
 				_body = world.CreateBody(bodyDef);
@@ -84,13 +86,19 @@ package net.box2fp
 					_Box2DOptions.restitution, _Box2DOptions.group, _Box2DOptions.category, 
 					_Box2DOptions.collmask);
 				_Box2DOptions = null;
-			}
+			} 
 		}
 		
 		/** Get the Box2D body object */
 		public function get body():b2Body
 		{
 			return _body;
+		}
+		
+		/** Set the Box2D body object */
+		public function set body(value:b2Body):void
+		{
+			_body = value;
 		}
 		
 		/** Get the Box2D world the object is in */
@@ -121,11 +129,11 @@ package net.box2fp
 		 */
 		override public function update():void
 		{
-			if (body && body.GetType() != b2Body.b2_staticBody)
+			if (body && body.GetTransform() && body.GetType() != b2Body.b2_staticBody)
 			{
 				var pos:b2Vec2 = body.GetPosition();
-				x = pos.x * box2dworld.scale - width/2 + 1;
-				y = pos.y * box2dworld.scale - height/2 + 1;
+				x = pos.x * box2dworld.scale; // - width / 2 + 1;
+				y = pos.y * box2dworld.scale; // - height / 2 + 1;
 				angleRads = body.GetAngle();
 			}
 			super.update();
@@ -136,8 +144,10 @@ package net.box2fp
 		 */
 		public function remove():void
 		{
+			//trace("beRemove");
 			if (box2dworld)
 			{
+				body.SetUserData(null);
 				box2dworld.b2world.DestroyBody(body);
 				box2dworld.remove(this);
 			}
